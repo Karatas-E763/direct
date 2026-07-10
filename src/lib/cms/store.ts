@@ -31,6 +31,7 @@ const HOTSPOT_SEEDS: Record<string, { hotspots: unknown[] }> = {
   "soluciones-especiales": solucionesEspecialesHotspots,
 };
 
+/** Paths inside the Blob store (and under data/cms locally). */
 const CMS_PATHS = {
   products: "products.json",
   vehicles: "vehicles.json",
@@ -142,9 +143,14 @@ async function readPersistedJson<T>(
   writablePath: string,
   fallback: T
 ): Promise<T> {
+  // Prefer Blob whenever credentials/store may be available (Vercel or local token).
   if (canUseBlobStorage()) {
-    const fromBlob = await readBlobJson<T>(cmsPath);
-    if (fromBlob !== null) return fromBlob;
+    try {
+      const fromBlob = await readBlobJson<T>(cmsPath);
+      if (fromBlob !== null) return fromBlob;
+    } catch (error) {
+      console.error(`[cms] blob read failed for ${cmsPath}`, error);
+    }
   }
 
   if (!isVercel()) {
@@ -175,8 +181,8 @@ async function writePersistedJson(
   if (canUseBlobStorage()) {
     try {
       await writeBlobJson(cmsPath, data);
-    } catch {
-      // Blob sync is optional when running locally.
+    } catch (error) {
+      console.error(`[cms] optional local→blob sync failed for ${cmsPath}`, error);
     }
   }
 }
@@ -239,7 +245,7 @@ export async function writeHotspots(vehicleId: string, data: { hotspots: unknown
 }
 
 export async function listHotspotVehicles() {
-  if (canUseBlobStorage()) {
+  if (isVercel() || canUseBlobStorage()) {
     return Object.keys(HOTSPOT_SEEDS);
   }
 
