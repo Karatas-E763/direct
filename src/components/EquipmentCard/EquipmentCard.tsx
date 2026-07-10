@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { FaCheck, FaWifi, FaBatteryFull, FaShieldAlt, FaMobileAlt, FaCamera, FaBrain, FaHdd, FaMoon, FaCrosshairs, FaTint, FaMagnet, FaBell, FaExclamationTriangle, FaMapMarkerAlt, FaVolumeMute, FaTint as FaWater } from "react-icons/fa";
+import { FaCheck, FaDownload, FaFilePdf, FaWifi, FaBatteryFull, FaShieldAlt, FaMobileAlt, FaCamera, FaBrain, FaHdd, FaMoon, FaCrosshairs, FaTint, FaMagnet, FaBell, FaExclamationTriangle, FaMapMarkerAlt, FaVolumeMute, FaTint as FaWater } from "react-icons/fa";
 import type { Product } from "@/types";
 
 const specIconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -126,7 +126,20 @@ export default function EquipmentCard({
         </ul>
       </div>
 
-      <div className="border-t border-gray-100 p-4">
+      <div className="border-t border-gray-100 p-4 space-y-2">
+        {product.pdf?.trim() ? (
+          <a
+            href={product.pdf}
+            download
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[#1e88e5] py-3 text-sm font-semibold text-[#1e88e5] hover:bg-blue-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e88e5] focus-visible:ring-offset-2"
+          >
+            <FaFilePdf />
+            <FaDownload className="text-xs" />
+            Descargar PDF
+          </a>
+        ) : null}
         <motion.button
           type="button"
           onClick={onAddToQuote}
