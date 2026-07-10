@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   compress: true,
   turbopack: {},
+  serverExternalPackages: ["@vercel/blob", "@vercel/oidc"],
   outputFileTracingIncludes: {
     "/api/cms/products": ["./data/cms/**/*"],
     "/api/cms/vehicles": ["./data/cms/**/*"],
@@ -15,6 +16,11 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "*.public.blob.vercel-storage.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.private.blob.vercel-storage.com",
         pathname: "/**",
       },
     ],

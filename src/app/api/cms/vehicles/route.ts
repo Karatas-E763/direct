@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { readVehicles, writeVehicles } from "@/lib/cms/store";
+import { ensureBlobRequestAuth } from "@/lib/cms/blob-store";
 import { requireAdmin } from "@/lib/auth";
 
 export const runtime = "nodejs";
@@ -9,8 +10,9 @@ const noStoreHeaders = {
   "Cache-Control": "no-store, no-cache, must-revalidate",
 };
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    ensureBlobRequestAuth(request);
     const data = await readVehicles();
     return NextResponse.json(data, { headers: noStoreHeaders });
   } catch {
@@ -20,6 +22,7 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   try {
+    ensureBlobRequestAuth(request);
     await requireAdmin();
     const data = await request.json();
     if (!Array.isArray(data)) {

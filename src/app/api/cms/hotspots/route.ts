@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { readHotspots, writeHotspots } from "@/lib/cms/store";
+import { ensureBlobRequestAuth } from "@/lib/cms/blob-store";
 import { requireAdmin } from "@/lib/auth";
 
 export const runtime = "nodejs";
@@ -11,6 +12,7 @@ const noStoreHeaders = {
 
 export async function GET(request: Request) {
   try {
+    ensureBlobRequestAuth(request);
     const { searchParams } = new URL(request.url);
     const vehicleId = searchParams.get("vehicleId");
     if (!vehicleId) {
@@ -25,6 +27,7 @@ export async function GET(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    ensureBlobRequestAuth(request);
     await requireAdmin();
     const { searchParams } = new URL(request.url);
     const vehicleId = searchParams.get("vehicleId");
