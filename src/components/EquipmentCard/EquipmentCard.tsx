@@ -22,6 +22,7 @@ import {
   FaTint as FaWater,
 } from "react-icons/fa";
 import type { Product } from "@/types";
+import { useAppStore } from "@/store/useAppStore";
 
 const specIconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   signal: FaWifi,
@@ -58,6 +59,10 @@ export default function EquipmentCard({
   onAddToQuote,
   onClose,
 }: EquipmentCardProps) {
+  const quoteItems = useAppStore((s) => s.quoteItems);
+  const quantity =
+    quoteItems.find((item) => item.productId === product.id)?.quantity ?? 0;
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 30 }}
@@ -145,6 +150,12 @@ export default function EquipmentCard({
       </div>
 
       <div className="border-t border-gray-100 p-4">
+        <div className="mb-3 flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-3 py-2">
+          <span className="text-sm text-gray-600">Cantidad en cotización</span>
+          <span className="min-w-7 text-center text-base font-bold text-[#1a3a5c]">
+            {quantity}
+          </span>
+        </div>
         <motion.button
           type="button"
           onClick={onAddToQuote}

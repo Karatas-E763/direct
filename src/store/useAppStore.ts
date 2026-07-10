@@ -51,21 +51,14 @@ export const useAppStore = create<AppState>((set, get) => ({
     const validIds = new Set(productIds);
     const items = get().quoteItems;
 
+    // Keep the quote empty until the user clicks "Agregar a cotización".
     if (items.length === 0) {
-      set({
-        quoteItems: productIds.map((productId) => ({ productId, quantity: 0 })),
-      });
       return;
     }
 
-    const existingIds = new Set(items.map((item) => item.productId));
     const kept = items.filter((item) => validIds.has(item.productId));
-    const added = productIds
-      .filter((id) => !existingIds.has(id))
-      .map((productId) => ({ productId, quantity: 0 }));
-
-    if (added.length > 0 || kept.length !== items.length) {
-      set({ quoteItems: [...kept, ...added] });
+    if (kept.length !== items.length) {
+      set({ quoteItems: kept });
     }
   },
 
@@ -90,10 +83,13 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   updateQuantity: (productId, quantity) => {
-    const nextQuantity = Math.max(0, quantity);
+    if (quantity <= 0) {
+      get().removeFromQuote(productId);
+      return;
+    }
     set({
       quoteItems: get().quoteItems.map((i) =>
-        i.productId === productId ? { ...i, quantity: nextQuantity } : i
+        i.productId === productId ? { ...i, quantity } : i
       ),
     });
   },

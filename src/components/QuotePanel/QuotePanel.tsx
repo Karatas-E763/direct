@@ -54,9 +54,11 @@ export default function QuotePanel({ vehicleTitle }: QuotePanelProps) {
           <h2 className="text-sm font-bold uppercase tracking-wide text-[#1a3a5c]">
             Tu cotización
           </h2>
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#1e88e5] text-xs font-bold text-white">
-            {itemCount}
-          </span>
+          {itemCount > 0 && (
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#1e88e5] text-xs font-bold text-white">
+              {itemCount}
+            </span>
+          )}
         </div>
       </div>
 
