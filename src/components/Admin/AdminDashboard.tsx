@@ -264,11 +264,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                     next[idx] = { ...product, image: v };
                     setProducts(next);
                   }} />
-                  <Field label="PDF manual" value={product.pdf} onChange={(v) => {
-                    const next = [...products];
-                    next[idx] = { ...product, pdf: v };
-                    setProducts(next);
-                  }} />
                   <Field label="Video (ruta)" value={product.video ?? ""} onChange={(v) => {
                     const next = [...products];
                     next[idx] = { ...product, video: v };
