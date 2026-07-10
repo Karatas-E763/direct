@@ -13,7 +13,7 @@ interface QuotePanelProps {
   vehicleTitle?: string;
 }
 
-export default function QuotePanel(_props: QuotePanelProps) {
+export default function QuotePanel({ vehicleTitle }: QuotePanelProps) {
   const quoteItems = useAppStore((s) => s.quoteItems);
   const selectedProduct = useAppStore((s) => s.selectedProduct);
   const updateQuantity = useAppStore((s) => s.updateQuantity);
@@ -36,8 +36,8 @@ export default function QuotePanel(_props: QuotePanelProps) {
       );
 
     downloadQuoteHtml(items, {
-      title: "Cotización DirectTrack",
-      ivaRate: config.ivaRate ?? 0.16,
+      config,
+      vehicleTitle,
     });
   };
 
