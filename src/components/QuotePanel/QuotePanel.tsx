@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaShoppingCart, FaTimes } from "react-icons/fa";
+import { FaDownload, FaFileAlt, FaShoppingCart, FaTimes } from "react-icons/fa";
+import type { Product } from "@/types";
 import { useAppStore } from "@/store/useAppStore";
-import { useCMSProducts } from "@/hooks/useCMS";
+import { useCMSProducts, useCMSQuoteConfig } from "@/hooks/useCMS";
 import { useQuoteTotals, formatPrice } from "@/hooks/useProducts";
+import { downloadQuoteHtml } from "@/utils/quoteHtml";
 
 interface QuotePanelProps {
   vehicleTitle?: string;
@@ -18,7 +20,26 @@ export default function QuotePanel(_props: QuotePanelProps) {
   const removeFromQuote = useAppStore((s) => s.removeFromQuote);
   const setSelectedProduct = useAppStore((s) => s.setSelectedProduct);
   const { getProduct } = useCMSProducts();
+  const { config } = useCMSQuoteConfig();
   const { subtotal, iva, total, itemCount } = useQuoteTotals();
+
+  const handleDownloadQuoteHtml = () => {
+    const items = quoteItems
+      .filter((item) => item.quantity > 0)
+      .map((item) => {
+        const product = getProduct(item.productId);
+        if (!product) return null;
+        return { product, quantity: item.quantity };
+      })
+      .filter(
+        (item): item is { product: Product; quantity: number } => item !== null
+      );
+
+    downloadQuoteHtml(items, {
+      title: "Cotización DirectTrack",
+      ivaRate: config.ivaRate ?? 0.16,
+    });
+  };
 
   return (
     <motion.div
@@ -149,24 +170,34 @@ export default function QuotePanel(_props: QuotePanelProps) {
         </AnimatePresence>
       </div>
 
-      {quoteItems.length > 0 && (
-        <div className="shrink-0 border-t border-gray-100 px-5 py-3">
-          <div className="space-y-1 text-sm">
-            <div className="flex justify-between text-gray-600">
-              <span>Subtotal</span>
-              <span>{formatPrice(subtotal)}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>IVA (16%)</span>
-              <span>{formatPrice(iva)}</span>
-            </div>
-            <div className="flex justify-between border-t border-gray-100 pt-2 text-base font-bold">
-              <span className="text-[#1a3a5c]">Total</span>
-              <span className="text-[#1e88e5]">{formatPrice(total)}</span>
-            </div>
+      <div className="shrink-0 space-y-3 border-t border-gray-100 px-5 pb-4 pt-2">
+        <div className="space-y-1 text-sm">
+          <div className="flex justify-between text-gray-600">
+            <span>Subtotal</span>
+            <span>{formatPrice(subtotal)}</span>
+          </div>
+          <div className="flex justify-between text-gray-600">
+            <span>IVA (16%)</span>
+            <span>{formatPrice(iva)}</span>
+          </div>
+          <div className="flex justify-between border-t border-gray-100 pt-2 text-base font-bold">
+            <span className="text-[#1a3a5c]">Total</span>
+            <span className="text-[#1e88e5]">{formatPrice(total)}</span>
           </div>
         </div>
-      )}
+
+        <motion.button
+          type="button"
+          onClick={handleDownloadQuoteHtml}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[#1e88e5] py-3 text-sm font-semibold text-[#1e88e5] hover:bg-blue-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e88e5] focus-visible:ring-offset-2"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <FaFileAlt />
+          <FaDownload className="text-xs" />
+          Descargar cotización HTML
+        </motion.button>
+      </div>
     </motion.div>
   );
 }

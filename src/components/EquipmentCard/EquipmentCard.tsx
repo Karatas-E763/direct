@@ -4,8 +4,6 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   FaCheck,
-  FaDownload,
-  FaFileAlt,
   FaWifi,
   FaBatteryFull,
   FaShieldAlt,
@@ -24,9 +22,6 @@ import {
   FaTint as FaWater,
 } from "react-icons/fa";
 import type { Product } from "@/types";
-import { useAppStore } from "@/store/useAppStore";
-import { useCMSProducts, useCMSQuoteConfig } from "@/hooks/useCMS";
-import { downloadQuoteHtml } from "@/utils/quoteHtml";
 
 const specIconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   signal: FaWifi,
@@ -63,28 +58,6 @@ export default function EquipmentCard({
   onAddToQuote,
   onClose,
 }: EquipmentCardProps) {
-  const quoteItems = useAppStore((s) => s.quoteItems);
-  const { getProduct } = useCMSProducts();
-  const { config } = useCMSQuoteConfig();
-
-  const handleDownloadQuoteHtml = () => {
-    const items = quoteItems
-      .filter((item) => item.quantity > 0)
-      .map((item) => {
-        const quotedProduct = getProduct(item.productId);
-        if (!quotedProduct) return null;
-        return { product: quotedProduct, quantity: item.quantity };
-      })
-      .filter(
-        (item): item is { product: Product; quantity: number } => item !== null
-      );
-
-    downloadQuoteHtml(items, {
-      title: "Cotización DirectTrack",
-      ivaRate: config.ivaRate ?? 0.16,
-    });
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, x: 30 }}
@@ -171,18 +144,7 @@ export default function EquipmentCard({
         </ul>
       </div>
 
-      <div className="space-y-2 border-t border-gray-100 p-4">
-        <motion.button
-          type="button"
-          onClick={handleDownloadQuoteHtml}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[#1e88e5] py-3 text-sm font-semibold text-[#1e88e5] hover:bg-blue-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e88e5] focus-visible:ring-offset-2"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <FaFileAlt />
-          <FaDownload className="text-xs" />
-          Descargar cotización HTML
-        </motion.button>
+      <div className="border-t border-gray-100 p-4">
         <motion.button
           type="button"
           onClick={onAddToQuote}
