@@ -35,7 +35,7 @@ function HotspotDot({
     const worldPos = new THREE.Vector3();
     mesh.getWorldPosition(worldPos);
     const dist = camera.position.distanceTo(worldPos);
-    const s = dist * 0.008;
+    const s = dist * 0.0128;
 
     mesh.scale.setScalar(s);
     if (ring) ring.scale.setScalar(s);

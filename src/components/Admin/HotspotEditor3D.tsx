@@ -112,7 +112,7 @@ function HotspotMarkers({
       }
 
       visual.sphere.getWorldPosition(WORLD_POS);
-      const scale = camera.position.distanceTo(WORLD_POS) * 0.008;
+      const scale = camera.position.distanceTo(WORLD_POS) * 0.0128;
       visual.sphere.scale.setScalar(scale);
       visual.ring.scale.setScalar(scale);
     }
